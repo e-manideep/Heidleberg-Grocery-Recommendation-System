@@ -314,3 +314,4 @@ def show_page():
 
     if st.button("Search"):
         get_recommendations(search_query, selected_category, pricing, offer,selected_store, top_n)
+show_page()
