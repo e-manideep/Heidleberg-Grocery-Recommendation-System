@@ -1,0 +1,9 @@
+requests
+undetected-chromedriver
+streamlit
+selenium
+scikit-learn
+pandas
+spacy
+gensim
+numpy
