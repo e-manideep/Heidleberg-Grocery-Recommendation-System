@@ -1,4 +1,5 @@
 import os
+import pickle
 
 import streamlit as st
 import pandas as pd
@@ -108,10 +109,24 @@ def handle_price_clean(x):
         return float(x.replace('*', '').replace(' ', '').replace('€', '').replace(',', '.').replace('.–', ''))
     except:
         return 0
+@st.cache_data
+def load_df():
+    file_path = os.getcwd() + '/Merged All Offers/2023-07-15.csv'  # Path to the pickle file
+    data = pd.read_csv(os.getcwd() + '/Merged All Offers/2023-07-15.csv')
+    return data
+
+
+@st.cache_data
+def load_vectorizer():
+    file_path = 'tfidf_vectorizer.pkl'  # Path to the pickle file
+    with open(file_path, 'rb') as file:
+        tfidf_vectorizer = pickle.load(file)
+
+    return tfidf_vectorizer
 
 
 print(os.getcwd() + '/Merged All Offers')
-data = pd.read_csv(os.getcwd() + '/Merged All Offers/2023-07-15.csv')
+data = load_df()
 data.drop(index=data[data.category == 'category'].index, inplace=True)
 data.drop(index=data[data['product_name'].isna()].index, inplace=True)
 
@@ -163,6 +178,8 @@ data.text_preprocessed = data.text_preprocessed.apply(text_preprocessing)
 # data_text = data[data.store_address.isin(store_names)]
 tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(data['text_preprocessed'])
+with open('tfidf_vectorizer.pkl', 'wb') as f:
+    pickle.dump(tfidf_vectorizer, f)
 # svd = TruncatedSVD(n_components=100)
 # reduced_matrix = svd.fit_transform(tfidf_matrix)
 print(type(tfidf_matrix))
@@ -195,6 +212,9 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
     if len(recommended_products) == 0:
         st.warning("No products matching the filters.")
         return
+    if not category:
+        st.warning('Please select at least one option.')
+
     html_output = "<table>"
     # Track the seen product names
     seen_product_names = set()
@@ -237,59 +257,59 @@ store_names = ['Hertzstraße 1, 69126 Heidelberg-Rohrbach', 'Rathausstr. 27 6912
 name = 'OBST & GEMÜSE Billigeres Produkt'
 
 
+def show_page():
+    st.title("Grocery Recommendation App")
+
+    search_query = st.text_input("Search:")
+    top_n = st.number_input("Number of recommendations:", min_value=1, max_value=20, value=5)
+    selected_category = st.multiselect('Choose the category', ['OBST & GEMÜSE', 'Kühlung Molkereiprodukte, Fette KÄSE',
+                                                               'Topangebote', 'Frühstück Kühlregal',
+                                                               'Fleisch, Geflügel, Wurst Fisch',
+                                                               'Wein & Spirituosen GETRÄNKE Leckere Cocktails für jeden Geschmack',
+                                                               'KNABBERN & NASCHEN Knabberartikel',
+                                                               'Drogerie, Tiernahrung Drogerie Tier',
+                                                               'weitere Produkte',
+                                                               'Pflanzen', 'Alkoholfreie Kaffee, Tee',
+                                                               'Elektro, Büro, Medien',
+                                                               'Haushalt  Heim, Haus',
+                                                               'Freizeit & Mode Sport  Bekleidung, Auto, Freizeit, Spiel',
+                                                               'Grillartikel zum Sparpreis', 'Cleveres Küchenzubehör',
+                                                               'Bettwäsche, Pyjamas und mehr',
+                                                               'Genuss aus deiner Region',
+                                                               'Outdoor-Mode von Nangaparbat',
+                                                               'Extra-Rabatte mit der Kaufland Card',
+                                                               'Exklusive Angebote der Kaufland Card',
+                                                               'Bademode von Chiemsee',
+                                                               'PAYBACK Angebote', 'Mit der REWE App sparen',
+                                                               'Kochen & Backen',
+                                                               'Alkoholfreie Getränke'])
+    selected_store = st.multiselect('Choose the nearby store', ['Penny,Dossenheimer Landstr. 40 69121 Heidelberg',
+                                                                'Penny,Bahnhofstr. 9-13 69115 Heidelberg',
+                                                                'Penny,Ploeck 13-21 69117 Heidelberg',
+                                                                'Penny,Rathausstr. 27 69126 Heidelberg',
+                                                                'Kaufland,Eppelheimer Straße 78, 69123 Heidelberg',
+                                                                'Kaufland,Kurfürsten-Anlage 61, 69115 Heidelberg',
+                                                                'Kaufland,Hertzstraße 1, 69126 Heidelberg-Rohrbach',
+                                                                'Edeka,Kurfürstenanlage 21-23, 69115 Heidelberg',
+                                                                'Edeka,Hauptstraße 198, 69117 Heidelberg',
+                                                                'Edeka,In der Neckarhelle 1-3, 69118 Heidelberg-Ziegelhausen'
+                                                                'REWE Sahin Karaaslan GmbH & Co. KG,Furtwanglerstr. 15, 69121 Heidelberg',
+                                                                'REWE Markt GmbH,Im Franzosengewann 3, 69124 Heidelberg / Kirchheim',
+                                                                'REWE Sahin Karaaslan GmbH & Co. KG,Berliner Str. 41-49, 69120 Heidelberg',
+                                                                'REWE Markt GmbH,Kurfürstenanlage 6, 69115 Heidelberg/Weststadt',
+                                                                'REWE Manuela Schrein oHG,Am Grünen Hag 2, 69118 Heidelberg',
+                                                                'REWE Karaaslan oHG,Ladenburger Str. 68, 69120 Heidelberg/Neuenheim',
+                                                                'REWE Markt GmbH,Im Weiher 14, 69121 Heidelberg/Handschuhsheim',
+                                                                'REWE Markt GmbH,Grenzhöfer Weg 29, 69123 Heidelberg',
+                                                                'REWE Markt GmbH,Felix-Wankel-Strasse 20, 69126 Heidelberg / Rohrbach'])
+
+    pricing = st.selectbox("By Price Level (optional):", [None, "Budget", "Premium", "Mittelklasse"])
+    offer = st.selectbox("By Offer Level (optional):",
+                         [None, "Normales Angebot", "Moderates Angebot", "Blockbuster Angebot"])
 
 
 
 
-st.title("Grocery Recommendation App")
 
-search_query = st.text_input("Search:")
-top_n = st.number_input("Number of recommendations:", min_value=1, max_value=20, value=5)
-selected_category = st.multiselect('Choose the category', ['OBST & GEMÜSE', 'Kühlung Molkereiprodukte, Fette KÄSE',
-                                                           'Topangebote', 'Frühstück Kühlregal',
-                                                           'Fleisch, Geflügel, Wurst Fisch',
-                                                           'Wein & Spirituosen GETRÄNKE Leckere Cocktails für jeden Geschmack',
-                                                           'KNABBERN & NASCHEN Knabberartikel',
-                                                           'Drogerie, Tiernahrung Drogerie Tier', 'weitere Produkte',
-                                                           'Pflanzen', 'Alkoholfreie Kaffee, Tee',
-                                                           'Elektro, Büro, Medien',
-                                                           'Haushalt  Heim, Haus',
-                                                           'Freizeit & Mode Sport  Bekleidung, Auto, Freizeit, Spiel',
-                                                           'Grillartikel zum Sparpreis', 'Cleveres Küchenzubehör',
-                                                           'Bettwäsche, Pyjamas und mehr', 'Genuss aus deiner Region',
-                                                           'Outdoor-Mode von Nangaparbat',
-                                                           'Extra-Rabatte mit der Kaufland Card',
-                                                           'Exklusive Angebote der Kaufland Card',
-                                                           'Bademode von Chiemsee',
-                                                           'PAYBACK Angebote', 'Mit der REWE App sparen',
-                                                           'Kochen & Backen',
-                                                           'Alkoholfreie Getränke'])
-selected_store = st.multiselect('Choose the nearby store', ['Penny,Dossenheimer Landstr. 40 69121 Heidelberg',
-                                                            'Penny,Bahnhofstr. 9-13 69115 Heidelberg',
-                                                            'Penny,Ploeck 13-21 69117 Heidelberg',
-                                                            'Penny,Rathausstr. 27 69126 Heidelberg',
-                                                            'Kaufland,Eppelheimer Straße 78, 69123 Heidelberg',
-                                                            'Kaufland,Kurfürsten-Anlage 61, 69115 Heidelberg',
-                                                            'Kaufland,Hertzstraße 1, 69126 Heidelberg-Rohrbach',
-                                                            'Edeka,Kurfürstenanlage 21-23, 69115 Heidelberg',
-                                                            'Edeka,Hauptstraße 198, 69117 Heidelberg',
-                                                            'Edeka,In der Neckarhelle 1-3, 69118 Heidelberg-Ziegelhausen'
-                                                            'REWE Sahin Karaaslan GmbH & Co. KG,Furtwanglerstr. 15, 69121 Heidelberg',
-                                                            'REWE Markt GmbH,Im Franzosengewann 3, 69124 Heidelberg / Kirchheim',
-                                                            'REWE Sahin Karaaslan GmbH & Co. KG,Berliner Str. 41-49, 69120 Heidelberg',
-                                                            'REWE Markt GmbH,Kurfürstenanlage 6, 69115 Heidelberg/Weststadt',
-                                                            'REWE Manuela Schrein oHG,Am Grünen Hag 2, 69118 Heidelberg',
-                                                            'REWE Karaaslan oHG,Ladenburger Str. 68, 69120 Heidelberg/Neuenheim',
-                                                            'REWE Markt GmbH,Im Weiher 14, 69121 Heidelberg/Handschuhsheim',
-                                                            'REWE Markt GmbH,Grenzhöfer Weg 29, 69123 Heidelberg',
-                                                            'REWE Markt GmbH,Felix-Wankel-Strasse 20, 69126 Heidelberg / Rohrbach'])
-
-if not selected_category:
-    st.warning('Please select at least one option.')
-
-pricing = st.selectbox("By Price Level (optional):", [None, "Budget", "Premium", "Mittelklasse"])
-offer = st.selectbox("By Offer Level (optional):",
-                     [None, "Normales Angebot", "Moderates Angebot", "Blockbuster Angebot"])
-
-if st.button("Search"):
-    get_recommendations(search_query, selected_category, pricing, offer,selected_store, top_n)
+    if st.button("Search"):
+        get_recommendations(search_query, selected_category, pricing, offer,selected_store, top_n)
