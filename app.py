@@ -230,13 +230,15 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
 
     # if category:
     #     recommended_products = recommended_products[recommended_products['category'].isin(category)]
-    # if store_address:
-    #     recommended_products = recommended_products[recommended_products['store_address'].isin(store_address)]
+    if store_address:
+        recommended_products = recommended_products[recommended_products['store_address'].isin(store_address)]
     if len(recommended_products) == 0:
         st.warning("No products matching the filters.")
         return
     if not category:
-        st.warning('Please select at least one option.')
+        st.warning('Please select at least one Category.')
+    if not store_address:
+        st.warning('Please select at least one Store Address.')
 
     html_output = "<table>"
     # Track the seen product names
