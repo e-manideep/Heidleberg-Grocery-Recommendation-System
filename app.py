@@ -4,6 +4,7 @@ import pickle
 import streamlit as st
 import pandas as pd
 import numpy as np
+
 from sklearn.cluster import KMeans
 from gensim.models import Word2Vec
 import spacy
@@ -12,7 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 from sklearn.decomposition import TruncatedSVD
-from IPython.display import Image, display, HTML
+# from IPython.display import Image, display, HTML
 
 # nlp = spacy.load('en_core_web_sm')
 
