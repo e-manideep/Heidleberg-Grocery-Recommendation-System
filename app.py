@@ -325,7 +325,6 @@ def show_page():
                          [None, "Normales Angebot", "Moderates Angebot", "Blockbuster Angebot"])
 
     if st.button("Search"):
-        print('yes')
         get_recommendations(search_query, selected_category, pricing, offer, selected_store, top_n)
 
 
