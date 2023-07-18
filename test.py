@@ -238,12 +238,20 @@ from selenium.webdriver.chrome.options import Options
 
 import sys
 
-with open('penny.html') as file:
-    response = file.read()
-soup = BeautifulSoup(response, 'html.parser')
-payback_points = soup.find('div', class_="pdpr-ProductContent").text.encode('cp1252').decode('utf-8')
+# with open('penny.html') as file:
+#     response = file.read()
+# soup = BeautifulSoup(response, 'html.parser')
+# payback_points = soup.find('div', class_="pdpr-ProductContent").text.encode('cp1252').decode('utf-8')
+#
+#
+#
+# print(payback_points)
+#
 
 
+data = pd.read_csv('Merged All Offers/2023-07-18.csv')
+print(data.shape)
+print(data[data.product_information.isna()])
 
-print(payback_points)
+print(data.isnull().sum())
 

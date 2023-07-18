@@ -1,5 +1,6 @@
 import os
 import pickle
+from datetime import datetime
 
 import streamlit as st
 import pandas as pd
@@ -13,14 +14,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 from sklearn.decomposition import TruncatedSVD
+
+
 # from IPython.display import Image, display, HTML
 
-# nlp = spacy.load('en_core_web_sm')
-
-nlp = spacy.load('de_core_news_lg')
 
 
-def handle_price_threshold(x):
+def handle_price_threshold(x,data):
+
     if x > 0:
         if x < data.price.quantile(0.25):
             return 'Cheaper Product'
@@ -56,7 +57,7 @@ def handle_tag_label(x):
 
 
 def handle_category_cleaning(x):
-    if x == "OBST & GEMÜSE" or x == 'Obst und Gemüse' or x == 'Obst & Gemüse':
+    if x == "OBST & GEMÜSE" or x == 'Obst und Gemüse' or x == 'Obst & Gemüse' or x == 'So lecker schmeckt pflanzlich':
         return 'OBST & GEMÜSE'
 
     elif x == 'Pflanzen' or x == 'Obst, Gemüse, Pflanzen':
@@ -83,20 +84,20 @@ def handle_category_cleaning(x):
     elif x == 'Kühlung' or x == 'Molkereiprodukte, Fette' or x == 'MOLKEREI & KÄSE':
         return 'Kühlung Molkereiprodukte, Fette KÄSE'
 
-    elif x == 'Haushalt' or x == 'Praktische Gartenprodukte' or x == 'Heim, Haus' or x == 'Putz- und Haushaltshelfer' or x == 'Haushalt & Wohnen':
+    elif x == 'Haushalt' or x == 'Praktische Gartenprodukte'  or x == 'Cleveres Küchenzubehör' or x == 'Heim, Haus' or x == 'Putz- und Haushaltshelfer' or x == 'Haushalt & Wohnen' or x == 'Garten und Baumarkt' or x == 'Outdoor-Mode von Nangaparbat':
         return 'Haushalt  Heim, Haus'
 
 
-    elif x == 'Topangebote' or x == 'Highlights der Woche' or x == 'GRUNDNAHRUNG' or x == 'Unsere Knüller' or x == 'Europäische Spezialitäten zum Sparpreis' or x == 'Framstag' or x == 'Butcher´s by Penny' or x == 'Food-Highlights für alle' or x == 'Alles für den Grillabend' or x == 'Weitere Angebote' or x == 'Spart bei euren Lieblingsmarken':
+    elif x == 'Topangebote' or x == 'Highlights der Woche'  or x == 'Genuss aus deiner Region' or x == 'Thema der Woche' or x == 'GRUNDNAHRUNG' or x == 'Unsere Knüller' or x == 'Europäische Spezialitäten zum Sparpreis' or x == 'Framstag' or x == 'Butcher´s by Penny' or x == 'Food-Highlights für alle' or x == 'Alles für den Grillabend' or x == 'Weitere Angebote' or x == 'Spart bei euren Lieblingsmarken' or x == '':
         return 'Topangebote'
 
-    elif x == 'Freizeit & Mode' or x == 'Sport & Freizeit' or x == 'Bekleidung, Auto, Freizeit, Spiel' or x == 'Markenbekleidung für Kinder':
+    elif x == 'Freizeit & Mode' or x == 'Sport & Freizeit' or x == 'Bekleidung, Auto, Freizeit, Spiel' or x == 'Markenbekleidung für Kinder' or x == 'Bettwäsche, Pyjamas und mehr' or x == 'Bademode von Chiemsee':
         return 'Freizeit & Mode Sport  Bekleidung, Auto, Freizeit, Spiel'
 
     elif x == 'NON-FOOD' or x == 'Sprudeln mit Sodastream' or x == '':
         return 'weitere Produkte'
 
-    elif x == 'Alkoholfreie' or x == 'Getränke, Spirituosen' or x == 'Kaffee, Tee, Süßwaren, Knabberartikel':
+    elif x == 'Alkoholfreie' or x == 'Getränke, Spirituosen' or x == 'Kaffee, Tee, Süßwaren, Knabberartikel' or x == 'Alkoholfreie Getränke':
         return 'Alkoholfreie Kaffee, Tee'
     elif x == 'extra-rabatte mit der Kaufland Card':
         return 'exklusiv Angebot der Kaufland Card'
@@ -110,24 +111,39 @@ def handle_price_clean(x):
         return float(x.replace('*', '').replace(' ', '').replace('€', '').replace(',', '.').replace('.–', ''))
     except:
         return 0
-@st.cache_data
-def load_df():
-    file_path = os.getcwd() + '/Merged All Offers/2023-07-15.csv'  # Path to the pickle file
-    data = pd.read_csv(os.getcwd() + '/Merged All Offers/2023-07-15.csv')
-    return data
 
 
-@st.cache_data
-def load_vectorizer():
-    file_path = 'tfidf_vectorizer.pkl'  # Path to the pickle file
-    with open(file_path, 'rb') as file:
-        tfidf_vectorizer = pickle.load(file)
+# @st.cache_data
+# def load_df():
+#     file_path = os.getcwd() + '/Merged All Offers/2023-07-17.csv'  # Path to the pickle file
+#     data = pd.read_csv(os.getcwd() + '/Merged All Offers/2023-07-17.csv')
+#     return data
+#
+#
+# @st.cache_data
+# def load_vectorizer():
+#     file_path = 'tfidf_vectorizer.pkl'  # Path to the pickle file
+#     with open(file_path, 'rb') as file:
+#         tfidf_vectorizer = pickle.load(file)
+#
+#     return tfidf_vectorizer
+#
+#
+# # NearestNeighbors
+# @st.cache_data
+# def load_nn():
+#     nn = NearestNeighbors(metric='cosine', algorithm='brute')
+#     return nn
+#
+#
+# # nlp = spacy.load('en_core_web_sm')
+# @st.cache_data
+# def get_nlp():
+#     return spacy.load('de_core_news_lg')
 
-    return tfidf_vectorizer
 
-
-print(os.getcwd() + '/Merged All Offers')
-data = load_df()
+nlp = spacy.load('de_core_news_lg')
+data = pd.read_csv(f'Merged All Offers/{datetime.now().date()}.csv')
 data.drop(index=data[data.category == 'category'].index, inplace=True)
 data.drop(index=data[data['product_name'].isna()].index, inplace=True)
 
@@ -140,60 +156,63 @@ data.tag_label = data.tag_label.apply(lambda x: x.strip())
 data.dropna(axis=0, subset=['product_link'], inplace=True)
 data.drop_duplicates(inplace=True)
 
-data = data[(data.category != 'PAYBACK Punkte Highlights') & (data.category != 'Dein Markt für italienischen Genuss')]
+data = data[
+    (data.category != 'PAYBACK Punkte Highlights') & (data.category != 'Dein Markt für italienischen Genuss')]
 data.category = data.category.apply(handle_category_cleaning)
 data.tag_label = data.tag_label.apply(handle_tag_label)
 data.price = data.price.apply(handle_price_clean)
 data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d')
-data_price_threshold = data.price.apply(handle_price_threshold)
+data_price_threshold = data.price.apply(lambda x: handle_price_threshold(x,data))
 data['price_threshold'] = data_price_threshold
 data.product_information = data.product_information.apply(lambda x: x.replace('\n', ' '))
 data.product_quantity = data.product_quantity.apply(lambda x: x.replace('\n', ' '))
 
-# import matplotlib.pyplot as plt
-#
-# import seaborn as sns
-# null_value = {each:data[each].isna().sum() for each in data}
-# sorted_dict = dict(sorted(null_value.items(),key=lambda x: x[1],reverse=True))
-#
-# fig, ax = plt.subplots()
-# ax.barh(list(sorted_dict.keys()),list(sorted_dict.values()))
-
 price_threshold_de = data.price_threshold.map(
     {"Cheaper Product": "Budget", "Expensive Product": "Premium", "Affordable Product": "Mittelklasse"})
+
 data['price_threshold_de'] = price_threshold_de
-
-# data['text_preprocessed'] = data['product_name'] + ' ' + data['payback_points'] + ' ' + data['payback_condition'] +
-# ' ' + data['product_quantity'] + ' ' + data['tag_label'] +  ' ' + data['product_information'] + ' ' + data[
-# 'category'] + ' ' + data.price_threshold_de data['text_preprocessed'] = data['product_name'] + ' ' + data[
-# 'product_quantity'] + ' ' + data['tag_label'] +  ' ' + data['product_information'] + ' ' + data['category'] + ' ' +
-# data.price_threshold_de
-data['text_preprocessed'] = data['product_name'] + ' ' + data['product_quantity'] + ' ' + data['tag_label'] + ' ' + \
-                            data['category'] + ' ' + data.price_threshold_de
-# data['text_preprocessed'] = data['product_name'] + ' ' + data['payback_points'] + ' ' + data['payback_condition'] +
-# ' ' + data['product_quantity'] + ' ' + data['tag_label'] + ' ' + data['product_link'] + ' ' +  data['category_de']
-# + ' ' + data.price_threshold_de + ' ' + data['category'] + ' ' + data.price_threshold
+data['text_preprocessed'] = data['product_name'] + ' ' + data['payback_points'] + ' ' + data['payback_condition'] + ' ' + data['product_quantity'] + ' ' + data['tag_label'] +  ' ' + data['product_information'] + ' ' + data['category'] + ' ' + data.price_threshold_de
 data['text_preprocessed'] = data['text_preprocessed'].apply(lambda x: str(x).replace('\n', ' '))
-data.text_preprocessed = data.text_preprocessed.apply(text_preprocessing)
 
-# data_text = data[data.store_address.isin(store_names)]
+
 tfidf_vectorizer = TfidfVectorizer()
 tfidf_matrix = tfidf_vectorizer.fit_transform(data['text_preprocessed'])
 with open('tfidf_vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf_vectorizer, f)
+
+
 # svd = TruncatedSVD(n_components=100)
 # reduced_matrix = svd.fit_transform(tfidf_matrix)
-print(type(tfidf_matrix))
 
-# NearestNeighbors
+
+# # NearestNeighbors
+# @st.cache_data
+# def load_nn():
+#     nn = NearestNeighbors(metric='cosine', algorithm='brute')
+#     return nn
+
+
 nn = NearestNeighbors(metric='cosine', algorithm='brute')
 nn.fit(tfidf_matrix)
 
 
+def text_preprocessing(text):
+    """Converting text into stemming """
+
+    documents = nlp(text.lower())
+    tokens = [each for each in documents]
+    return ' '.join([each.lemma_ for each in tokens])
+
+
 def get_recommendations(product_name, category, pricing, offer, store_address, top_n=20):
-    category = ' '.join(category)
-    query_preprocessed = product_name + ' ' + category + ' ' + offer + ' ' + pricing
-    query_preprocessed = text_preprocessing(query_preprocessed)
+    query = product_name
+
+    if category:
+        query_category = ' '.join(category)
+        query += query_category
+
+    # query_preprocessed = product_name + ' ' + category + ' ' + offer + ' ' + pricing
+    query_preprocessed = text_preprocessing(query)
 
     # Transform the query using the TF-IDF vectorizer
     query_vector = tfidf_vectorizer.transform([query_preprocessed])
@@ -206,10 +225,13 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
 
     # return data[['product_link','category_de','store']].iloc[indices[0]]
     recommended_products = data.iloc[indices[0]]
-    if category:
-        recommended_products = recommended_products[recommended_products['category'].isin(category)]
-    if store_names:
-        recommended_products = recommended_products[recommended_products['store_address'].isin(store_address)]
+
+
+
+    # if category:
+    #     recommended_products = recommended_products[recommended_products['category'].isin(category)]
+    # if store_address:
+    #     recommended_products = recommended_products[recommended_products['store_address'].isin(store_address)]
     if len(recommended_products) == 0:
         st.warning("No products matching the filters.")
         return
@@ -221,7 +243,7 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
     seen_product_names = set()
 
     for index, row in recommended_products.iterrows():
-        product_name = row['PRODUCT_NAME_T']
+        product_name = row['product_name']
 
         # Skip duplicate product names
         if product_name in seen_product_names:
@@ -230,17 +252,17 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
         seen_product_names.add(product_name)
 
         html_output += "<tr>"
-        html_output += f"<td><a href='{row['product_link']}' target='_blank'><img src='{row['IMAGE_URL']}' style='width:150px;height:150px;'></a></td>"
+        html_output += f"<td><a href='{row['product_link']}' target='_blank'><img src='{row['product_image']}' style='width:150px;height:150px;'></a></td>"
         html_output += "<td>"
         html_output += f"<b>Product Name:</b> {product_name}<br>"
         html_output += f"<b>Price:</b> {row['price']}<br>"
-        html_output += f"<b>Brand:</b> {row['PRODUCT_BRAND']}<br>"
+        # html_output += f"<b>Brand:</b> {row['PRODUCT_BRAND']}<br>"
 
         # Retrieve the stores that carry the product
         stores = data[data['product_name'] == product_name]['store'].tolist()
-        html_output += f"<b>Stores:</b> {', '.join(stores)}<br>"
+        # html_output += f"<b>Stores:</b> {', '.join(stores)}<br>"
 
-        html_output += f"<b>Pricing Category:</b> {row['product_quantity']}<br>"
+        html_output += f"<b>Product Quantity:</b> {row['product_quantity']}<br>"
         # html_output += f"<b>Nutritional Tags:</b> {row['nutritional_tags']}<br>"
         html_output += "</td>"
         html_output += "</tr>"
@@ -250,12 +272,6 @@ def get_recommendations(product_name, category, pricing, offer, store_address, t
     # Display the HTML output
     st.markdown(html_output, unsafe_allow_html=True)
     # return recommended_products
-
-
-store_names = ['Hertzstraße 1, 69126 Heidelberg-Rohrbach', 'Rathausstr. 27 69126 Heidelberg',
-               'Dossenheimer Landstr. 40 69121 Heidelberg', 'REWE Markt GmbH, Grenzhöfer Weg 29, 69123 Heidelberg',
-               'Kurfürstenanlage 21-23, 69115 Heidelberg']
-name = 'OBST & GEMÜSE Billigeres Produkt'
 
 
 def show_page():
@@ -308,10 +324,9 @@ def show_page():
     offer = st.selectbox("By Offer Level (optional):",
                          [None, "Normales Angebot", "Moderates Angebot", "Blockbuster Angebot"])
 
-
-
-
-
     if st.button("Search"):
-        get_recommendations(search_query, selected_category, pricing, offer,selected_store, top_n)
+        print('yes')
+        get_recommendations(search_query, selected_category, pricing, offer, selected_store, top_n)
+
+
 show_page()

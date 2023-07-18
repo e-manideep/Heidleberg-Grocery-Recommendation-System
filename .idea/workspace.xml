@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="12786f77-c93f-4c9a-9435-4917f6e48d06" name="Changes" comment="update Commit">
-      <change afterPath="$PROJECT_DIR$/venv/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tfidf_vectorizer.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/tfidf_vectorizer.pkl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,9 +52,9 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Wannacry\PycharmProjects\new_scrapping" />
       <recent name="C:\Users\Wannacry\PycharmProjects\new_scrapping\Rewe page source\Grenzhöfer Weg 29" />
       <recent name="C:\Users\Wannacry\PycharmProjects\new_scrapping\Rewe page source" />
-      <recent name="C:\Users\Wannacry\PycharmProjects\new_scrapping" />
       <recent name="C:\Users\Wannacry\PycharmProjects\new_scrapping\venv" />
     </key>
   </component>
@@ -217,8 +217,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.penny" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.penny" />
         <item itemvalue="Python.stem" />
         <item itemvalue="Python.rewe_store" />
         <item itemvalue="Python.kaufland_heidelberg" />
@@ -290,7 +290,28 @@
       <option name="project" value="LOCAL" />
       <updated>1689663114295</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="update Commit">
+      <created>1689672878035</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1689672878035</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update Commit">
+      <created>1689672920239</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1689672920239</updated>
+    </task>
+    <task id="LOCAL-00011" summary="update Commit">
+      <created>1689673124152</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1689673124152</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
